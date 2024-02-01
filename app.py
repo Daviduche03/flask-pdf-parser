@@ -1,16 +1,16 @@
 from flask import Flask, render_template, request
+from flask_cors import CORS  # Import the CORS extension
 from pypdf import PdfReader
 from werkzeug.utils import secure_filename
+
+app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 
 app = Flask(__name__)
 
 @app.route('/')
 def hello_world():
-    reader = PdfReader("example.pdf")
-    number_of_pages = len(reader.pages)
-    page = reader.pages[0]
-    text = page.extract_text()
-    print(text)
+    
     return 'Hello, World!'
 
 

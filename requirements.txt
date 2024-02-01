@@ -1,3 +1,4 @@
 Flask
 Gunicorn
 pypdf
+flask-cors
