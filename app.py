@@ -4,7 +4,7 @@ from pypdf import PdfReader
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+CORS(app, resources={r"/upload": {"origins": "http://localhost:3000"}})
 
 app = Flask(__name__)
 
