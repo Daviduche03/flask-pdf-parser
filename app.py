@@ -5,7 +5,7 @@ from pypdf import PdfReader
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-CORS(app, resources={r"/upload": {"origins": "*"}})
+# CORS(app, resources={r"/upload": {"origins": "*"}})
 
 app = Flask(__name__)
 
@@ -16,7 +16,7 @@ def hello_world():
 
 
 @app.route('/upload', methods=['POST'])
-# @cross_origin(origin='http://localhost:3000', headers=['Content-Type'])
+@cross_origin(origin='http://localhost:3000', headers=['Content-Type'])
 def upload_file():
     if request.method == 'POST':
         f = request.files['file']
