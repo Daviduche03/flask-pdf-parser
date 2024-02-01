@@ -1,10 +1,11 @@
 from flask import Flask, render_template, request
 from flask_cors import CORS  # Import the CORS extension
+from flask_cors import cross_origin
 from pypdf import PdfReader
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-CORS(app, resources={r"/upload": {"origins": "http://localhost:3000"}})
+CORS(app, resources={r"/upload": {"origins": "*"}})
 
 app = Flask(__name__)
 
@@ -14,7 +15,8 @@ def hello_world():
     return 'Hello, World!'
 
 
-@app.route('/upload', methods=['GET', 'POST'])
+@app.route('/upload', methods=['POST'])
+# @cross_origin(origin='http://localhost:3000', headers=['Content-Type'])
 def upload_file():
     if request.method == 'POST':
         f = request.files['file']
