@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS  # Import the CORS extension
 from flask_cors import cross_origin
 from pypdf import PdfReader
@@ -22,7 +22,8 @@ def upload_file():
         f = request.files['file']
         f.save(secure_filename(f.filename))
         pdf_text = extract_pdf_text(f.filename)
-        return pdf_text
+        return jsonify({'pdf_text': pdf_text})
+
 
 def extract_pdf_text(pdf_filename):
     with open(pdf_filename, 'rb') as file:
