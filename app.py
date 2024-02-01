@@ -35,7 +35,17 @@ def extract_pdf_text(pdf_filename):
         for page in reader.pages:
             text += page.extract_text()
         return text
-        
+
+
+@app.after_request
+def add_headers(response):
+    response.headers.add('Content-Type', 'application/json')
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Expose-Headers', 'Content-Type,Content-Length,Authorization,X-Pagination')
+    return response
+
 
 # if __name__ == '__main__':
 #     app.run(debug=True)
