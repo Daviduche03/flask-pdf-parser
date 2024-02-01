@@ -34,5 +34,5 @@ def extract_pdf_text(pdf_filename):
         return text
         
 
-if __name__ == '__main__':
-    app.run(debug=True)
+# if __name__ == '__main__':
+#     app.run(debug=True)
