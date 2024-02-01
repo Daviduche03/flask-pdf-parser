@@ -16,7 +16,7 @@ def hello_world():
 
 
 @app.route('/upload', methods=['POST'])
-@cross_origin(origin='*', headers=['Content-Type'])
+# @cross_origin(origin='*', headers=['Content-Type'])
 def upload_file():
     if request.method == 'POST':
         f = request.files['file']
