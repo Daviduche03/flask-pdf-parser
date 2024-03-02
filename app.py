@@ -1,51 +1,67 @@
-from flask import Flask, render_template, request, jsonify
-from flask_cors import CORS  # Import the CORS extension
-from flask_cors import cross_origin
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 from pypdf import PdfReader
-from werkzeug.utils import secure_filename
+import requests
+ 
+from io import BytesIO
 
 app = Flask(__name__)
-# CORS(app, resources={r"/upload": {"origins": "*"}})
-
-app = Flask(__name__)
-
-@app.route('/')
-def hello_world():
-    
-    return 'Hello, World!'
-
+CORS(app)
 
 @app.route('/upload', methods=['POST'])
-# @cross_origin(origin='*', headers=['Content-Type'])
 def upload_file():
-    if request.method == 'POST':
-        f = request.files['file']
-        f.save(secure_filename(f.filename))
-        pdf_text = extract_pdf_text(f.filename)
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
+    
+    
+
+    file = request.files['file']
+
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+
+    if file:
+        pdf_text = extract_pdf_text(file)
         return jsonify({'pdf_text': pdf_text})
 
+    return jsonify({'error': 'Unknown error'}), 500
 
-def extract_pdf_text(pdf_filename):
-    with open(pdf_filename, 'rb') as file:
-        reader = PdfReader(file)
-        text = ""
-        page = reader.pages[1]
-        # text = page.extract_text()
-        print(reader.pages)
-        for page in reader.pages:
-            text += page.extract_text()
-        return text
-
-
-@app.after_request
-def add_headers(response):
-    response.headers.add('Content-Type', 'application/json')
-    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
-    response.headers.add('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Expose-Headers', 'Content-Type,Content-Length,Authorization,X-Pagination')
-    return response
+def extract_pdf_text(file):
+    pdf_text = ""
+    with BytesIO(file.read()) as file_buffer:
+        pdf = PdfReader(file_buffer)
+        print(len(pdf.pages))
+        for page_num in range(len(pdf.pages)):
+            page = pdf.pages[page_num]
+            pdf_text += page.extract_text()
+    return pdf_text
 
 
-# if __name__ == '__main__':
-#     app.run(debug=True)
+@app.route('/upload/url', methods=['POST'])
+def upload_from_url():
+    data = request.get_json()
+    pdf_url = data.get('pdf_url')
+
+    if not pdf_url:
+        return jsonify({'error': 'Missing PDF URL'}), 400
+
+    response = requests.get(pdf_url)
+    if response.status_code != 200:
+        return jsonify({'error': 'Failed to fetch PDF from URL'}), 400
+
+    pdf_text = extract_pdf_text_from_bytes(response.content)
+    return jsonify({'pdf_text': pdf_text})
+
+def extract_pdf_text_from_bytes(pdf_content):
+    pdf_text = ""
+    with BytesIO(pdf_content) as file_buffer:
+        pdf = PdfReader(file_buffer)
+        for page_num in range(len(pdf.pages)):
+            page = pdf.pages[page_num]
+            pdf_text += page.extract_text()
+    return pdf_text
+
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
