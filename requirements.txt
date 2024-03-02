@@ -2,3 +2,4 @@ Flask
 Gunicorn
 pypdf
 flask-cors
+requests
