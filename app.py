@@ -63,5 +63,5 @@ def extract_pdf_text_from_bytes(pdf_content):
 
 
 
-if __name__ == '__main__':
-    app.run(debug=True)
+# if __name__ == '__main__':
+#     app.run(debug=True)
